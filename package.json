@@ -1,0 +1,46 @@
+{
+  "name": "Zoe",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/main.js",
+  "repository": "https://github.com/iawia002/Zoe",
+  "author": "iawia002",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "start": "yarn run build && electron ./dist/main.js",
+    "pack": "yarn run build && electron-builder --dir",
+    "dist": "yarn run build && electron-builder"
+  },
+  "build": {
+    "productName": "Zoe",
+    "appId": "com.electron.Zoe",
+    "asar": false,
+    "files": [
+      "dist/",
+      "node_modules/",
+      "img/",
+      "package.json",
+      "index.html",
+      "config.yml"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "img/infinite.icns"
+    }
+  },
+  "devDependencies": {
+    "electron": "^1.7.10",
+    "electron-builder": "^19.50.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.2"
+  },
+  "dependencies": {
+    "@types/js-yaml": "^3.10.1",
+    "js-yaml": "^3.10.0",
+    "menubar": "^5.2.3",
+    "qiniu": "^7.1.1"
+  }
+}

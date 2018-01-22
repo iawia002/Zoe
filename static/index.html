@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>config</title>
+    <style>
+        body {
+            font-family: "Microsoft Yahei", "Hiragino Sans GB", "WenQuanYi Micro Hei", "\5FAE\8F6F\96C5\9ED1", sans-serif, tahoma, arial;
+            margin: 0;
+            padding: 0;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        ::selection {
+            background: rgb(91, 161, 135);
+            color: #fff;
+        }
+        .window {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .config {
+            padding: 10px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .config .field {
+            overflow: hidden;
+            margin: 10px;
+        }
+        .config .field input {
+            width: 100%;
+            border: 0;
+            padding: 5px;
+            font-size: 1rem;
+            border-bottom: 1px solid #eee;
+            outline: 0;
+        }
+        .config .field input[type='checkbox'] {
+            display: inline;
+            width: auto;
+        }
+        .footer {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            bottom: 0;
+            background-color: rgb(91, 161, 135);
+            text-align: center;
+            font-size: 1rem;
+            color: #fff;
+            padding: 10px 0px;
+            margin: 0;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="config">
+            <div class="field">
+                <input type="text" id="ACCESS_KEY" placeholder="ACCESS_KEY">
+            </div>
+            <div class="field">
+                <input type="text" id="SECRET_KEY" placeholder="SECRET_KEY">
+            </div>
+            <div class="field">
+                <input type="text" id="bucket" placeholder="bucket">
+            </div>
+            <div class="field">
+                <input type="text" id="bucketUrl" placeholder="bucket URL">
+            </div>
+            <div class="field">
+                <input type="checkbox" id="markdown">
+                <label for="markdown">markdown 格式</label>
+            </div>
+        </div>
+        <a class="footer" id="submit" href="#">保存配置</a>
+    </div>
+
+    <script>
+        const fs = require('fs')
+        const path = require('path')
+        const yaml = require('js-yaml')
+        const {ipcRenderer} = require('electron')
+
+        const config = yaml.safeLoad(
+            fs.readFileSync(path.join(__dirname, '../config.yml'), 'utf8')
+        )
+
+        const ACCESS_KEY = document.getElementById("ACCESS_KEY");
+        const SECRET_KEY = document.getElementById("SECRET_KEY");
+        const bucket = document.getElementById("bucket");
+        const bucketUrl = document.getElementById("bucketUrl");
+        const markdown = document.getElementById("markdown");
+
+        if (config) {
+          ACCESS_KEY.value = config.ACCESS_KEY;
+          SECRET_KEY.value = config.SECRET_KEY;
+          bucket.value = config.bucket;
+          bucketUrl.value = config.bucketUrl;
+          markdown.checked = config.markdown;
+        }
+
+        const button = document.getElementById("submit");
+        button.onclick = () => {
+            const config = {
+                'ACCESS_KEY': ACCESS_KEY.value,
+                'SECRET_KEY': SECRET_KEY.value,
+                'bucket': bucket.value,
+                'bucketUrl': bucketUrl.value,
+                'markdown': markdown.checked ? true: false,
+            }
+            fs.writeFileSync(path.join(__dirname, '../config.yml'), yaml.safeDump(config), 'utf8')
+            // alert('done')
+            ipcRenderer.send('configDone', '')
+        }
+    </script>
+</body>
+</html>
