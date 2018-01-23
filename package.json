@@ -1,7 +1,7 @@
 {
   "name": "Zoe",
   "version": "0.1.0",
-  "description": "",
+  "description": "快捷上传文件到七牛云 for macOS",
   "main": "dist/main.js",
   "repository": "https://github.com/iawia002/Zoe",
   "author": "iawia002",
@@ -21,14 +21,13 @@
     "files": [
       "dist/",
       "node_modules/",
-      "img/",
+      "static/",
       "package.json",
-      "index.html",
       "config.yml"
     ],
     "mac": {
       "category": "public.app-category.productivity",
-      "icon": "img/infinite.icns"
+      "icon": "static/img/infinite.icns"
     }
   },
   "devDependencies": {
