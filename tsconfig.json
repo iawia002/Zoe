@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "lib": [
+      "dom",
+      "es2017",
+    ],
     "noImplicitAny": true,
     "removeComments": true,
     "sourceMap": false,
