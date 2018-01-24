@@ -1,6 +1,6 @@
 {
   "name": "Zoe",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "快捷上传文件到七牛云 for macOS",
   "main": "dist/main.js",
   "repository": "https://github.com/iawia002/Zoe",
@@ -32,14 +32,14 @@
     }
   },
   "devDependencies": {
-    "electron": "^1.7.10",
-    "electron-builder": "^19.50.0",
+    "@types/fs-extra": "^5.0.0",
+    "@types/js-yaml": "^3.10.1",
+    "electron": "^1.7.11",
+    "electron-builder": "^19.55.2",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2"
   },
   "dependencies": {
-    "@types/fs-extra": "^5.0.0",
-    "@types/js-yaml": "^3.10.1",
     "fs-extra": "^5.0.0",
     "js-yaml": "^3.10.0",
     "menubar": "^5.2.3",

@@ -7,7 +7,7 @@ import * as qiniu from 'qiniu';
 import * as yaml from 'js-yaml';
 const menubar = require('menubar');
 
-import { CONFIG_DIR, CONFIG_FILE_PATH, PROGRESS_FILE_PATH, createConfigDir } from './config';
+import { CONFIG_DIR, CONFIG_FILE_PATH, createConfigDir } from './config';
 
 
 interface uploadOption {
@@ -59,8 +59,9 @@ class Upload {
   uploadFile(option: uploadOption): void {
     const config = new qiniu.conf.Config();
     const resumeUploader = new qiniu.resume_up.ResumeUploader(config);
+    const progress_file_path = path.join(CONFIG_DIR, `progress_${option.key}.log`);
     const putExtra = new qiniu.resume_up.PutExtra(
-      null, null, null, PROGRESS_FILE_PATH
+      null, null, null, progress_file_path
     );
     resumeUploader.putFile(option.uptoken, option.key, option.localFile, putExtra, (respErr, respBody, respInfo) => {
       if (respErr) {
