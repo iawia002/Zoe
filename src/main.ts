@@ -15,6 +15,9 @@ interface uploadOption {
   localFile: string;
 }
 
+const VIDEOTYPE: Array<string> = ['mp4', 'webm', 'ogg'];
+const IMAGETYPE: Array<string> = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+
 
 class Upload {
   config: any;
@@ -26,14 +29,14 @@ class Upload {
     );
   }
 
-  loadConfig() {
+  loadConfig(): void {
     this.config = yaml.safeLoad(
       fs.readFileSync(path.join(__dirname, '../config.yml'), 'utf8')
     );
   }
 
   //构建上传策略函数
-  uptoken(key: string) {
+  uptoken(key: string): string {
     const options = {
       scope: `${this.config.bucket}:${key}`,
     };
@@ -45,14 +48,14 @@ class Upload {
   }
 
   // 获取文件的 hash 值
-  sha1(path: string) {
+  sha1(path: string): string {
     const hash = crypto.createHash('sha1');
     const buffer = fs.readFileSync(path);
     hash.update(buffer);
     return hash.digest('hex');
   }
 
-  uploadFile(option: uploadOption) {
+  uploadFile(option: uploadOption): void {
     const config = new qiniu.conf.Config();
     const resumeUploader = new qiniu.resume_up.ResumeUploader(config);
     const putExtra = new qiniu.resume_up.PutExtra(
@@ -66,7 +69,6 @@ class Upload {
           body: '上传失败，请检查配置',
         });
         myNotification.show();
-        console.log(respErr);
       } else {
         // 上传成功， 处理返回值
         if (respInfo.statusCode == 200) {
@@ -81,13 +83,12 @@ class Upload {
             body: '上传失败，请检查配置',
           });
           myNotification.show();
-          console.log(respInfo);
         }
       }
     });
   }
 
-  up(paths: string[]) {
+  up(paths: string[]): void {
     let output: string = '';
     this.loadConfig();
     for (const filePath of paths) {
@@ -101,10 +102,16 @@ class Upload {
       });
       const url = `${this.config.bucketUrl}${key}`;
       if (this.config.markdown){
-        output += `![](${url})\n`;
+        if (VIDEOTYPE.includes(fileType)) {
+          output += `<video controls style="width: 100%;"><source src="${url}" type="video/${fileType}"></video>\n`;
+        } else if (IMAGETYPE.includes(fileType)){
+          output += `![](${url})\n`;
+        } else {
+          output += `[${key}](${url})\n`;
+        }
       }
       else {
-        output += `${url}\n`
+        output += `${url}\n`;
       }
     }
     clipboard.writeText(output);
@@ -129,7 +136,7 @@ ipcMain.on('configDone', (event: any, arg: any) => {
 });
 
 mb.on('ready', () => {
-  const name = mb.app.getName()
+  const name = mb.app.getName();
   const template: MenuItemConstructorOptions[] = [{
     label: name,
     submenu: [
@@ -189,10 +196,10 @@ mb.on('ready', () => {
       {type: 'separator'},
       {role: 'front'},
     ]
-  }]
+  }];
 
-  const menu = Menu.buildFromTemplate(template)
-  Menu.setApplicationMenu(menu)
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 
   mb.tray.on('drop-files', (event: any, files: any) => {
     uploader.up(files);
