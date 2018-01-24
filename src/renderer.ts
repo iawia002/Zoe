@@ -3,9 +3,12 @@ import * as path from 'path';
 import * as yaml from 'js-yaml';
 import { ipcRenderer } from 'electron';
 
+import { CONFIG_FILE_PATH } from './config';
+
+
 
 const config = yaml.safeLoad(
-  fs.readFileSync(path.join(__dirname, '../config.yml'), 'utf8')
+  fs.readFileSync(CONFIG_FILE_PATH, 'utf8')
 );
 
 const ACCESS_KEY = <HTMLInputElement>document.getElementById('ACCESS_KEY');
@@ -29,6 +32,6 @@ button.onclick = () => {
     'bucketUrl': bucketUrl.value,
     'markdown': markdown.checked ? true : false,
   };
-  fs.writeFileSync(path.join(__dirname, '../config.yml'), yaml.safeDump(config), 'utf8');
+  fs.writeFileSync(CONFIG_FILE_PATH, yaml.safeDump(config), 'utf8');
   ipcRenderer.send('configDone', '');
 }

@@ -5,8 +5,9 @@ import * as path from 'path';
 import { clipboard, ipcMain, Notification, nativeImage, Menu, MenuItemConstructorOptions } from 'electron';
 import * as qiniu from 'qiniu';
 import * as yaml from 'js-yaml';
-
 const menubar = require('menubar');
+
+import { CONFIG_DIR, CONFIG_FILE_PATH, PROGRESS_FILE_PATH, createConfigDir } from './config';
 
 
 interface uploadOption {
@@ -15,8 +16,8 @@ interface uploadOption {
   localFile: string;
 }
 
-const VIDEOTYPE: Array<string> = ['mp4', 'webm', 'ogg'];
-const IMAGETYPE: Array<string> = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+const VIDEO_TYPE: Array<string> = ['mp4', 'webm', 'ogg'];
+const IMAGE_TYPE: Array<string> = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
 
 
 class Upload {
@@ -31,7 +32,7 @@ class Upload {
 
   loadConfig(): void {
     this.config = yaml.safeLoad(
-      fs.readFileSync(path.join(__dirname, '../config.yml'), 'utf8')
+      fs.readFileSync(CONFIG_FILE_PATH, 'utf8')
     );
   }
 
@@ -59,7 +60,7 @@ class Upload {
     const config = new qiniu.conf.Config();
     const resumeUploader = new qiniu.resume_up.ResumeUploader(config);
     const putExtra = new qiniu.resume_up.PutExtra(
-      null, null, null, path.join(__dirname, 'progress.log')
+      null, null, null, PROGRESS_FILE_PATH
     );
     resumeUploader.putFile(option.uptoken, option.key, option.localFile, putExtra, (respErr, respBody, respInfo) => {
       if (respErr) {
@@ -102,9 +103,9 @@ class Upload {
       });
       const url = `${this.config.bucketUrl}${key}`;
       if (this.config.markdown){
-        if (VIDEOTYPE.includes(fileType)) {
+        if (VIDEO_TYPE.includes(fileType)) {
           output += `<video controls style="width: 100%;"><source src="${url}" type="video/${fileType}"></video>\n`;
-        } else if (IMAGETYPE.includes(fileType)){
+        } else if (IMAGE_TYPE.includes(fileType)){
           output += `![](${url})\n`;
         } else {
           output += `[${key}](${url})\n`;
@@ -118,9 +119,7 @@ class Upload {
   }
 }
 
-
-const uploader = new Upload();
-
+createConfigDir();
 
 const mb = menubar({
   // 'alwaysOnTop': true,
@@ -136,6 +135,8 @@ ipcMain.on('configDone', (event: any, arg: any) => {
 });
 
 mb.on('ready', () => {
+  const uploader = new Upload();
+
   const name = mb.app.getName();
   const template: MenuItemConstructorOptions[] = [{
     label: name,
