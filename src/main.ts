@@ -106,7 +106,7 @@ class Upload {
       if (this.config.markdown){
         if (VIDEO_TYPE.includes(fileType)) {
           output += `<video controls style="width: 100%;"><source src="${url}" type="video/${fileType}"></video>\n`;
-        } else if (IMAGE_TYPE.includes(fileType)){
+        } else if (IMAGE_TYPE.includes(fileType.toLowerCase())){
           output += `![](${url})\n`;
         } else {
           output += `[${key}](${url})\n`;
